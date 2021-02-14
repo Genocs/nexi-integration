@@ -1,0 +1,66 @@
+﻿@model MotoResultViewModel
+@{
+    ViewData["Title"] = "Moto";
+}
+
+
+<div class="text-center">
+    <h1 class="display-4">Risultato richiesta moto</h1>
+
+    <div>
+        <table class="table table-striped table-hover ">
+            <thead>
+                <tr>
+                    <th>Parametro</th>
+                    <th>Risultato</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>PaymentId</td>
+                    <td>@Model.PaymentId</td>
+                </tr>
+
+                <tr>
+                    <td>Result</td>
+                    <td>@Model.Result</td>
+                </tr>
+                <tr>
+                    <td>Merchant Order Id</td>
+                    <td>@Model.MerchantOrderId</td>
+                </tr>
+                <tr>
+                    <td>Authorization Code</td>
+                    <td>@Model.AuthorizationCode</td>
+                </tr>
+                <tr>
+                    <td>RRN</td>
+                    <td>@Model.RRN</td>
+                </tr>
+                <tr>
+                    <td>Response Code</td>
+                    <td>@Model.ResponseCode</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>@Model.Description</td>
+                </tr>
+                <tr>
+                    <td>Card Country</td>
+                    <td>@Model.CardCountry</td>
+                </tr>
+                <tr>
+                    <td>Card Type</td>
+                    <td>@Model.CardType</td>
+                </tr>
+                <tr>
+                    <td>Custom Field</td>
+                    <td>@Model.CustomField</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

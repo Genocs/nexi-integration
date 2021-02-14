@@ -1,0 +1,21 @@
+﻿@model DetailsViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div class="text-center">
+    <h1 class="display-4">Il risultato della richiesta è </h1>
+
+    <div>
+        <pre>
+             @Model.RequestId
+        </pre>
+        PaymentId : @Model.PaymentId
+        HostedPageUrl : @Model.HostedPageUrl
+        SecurityToken : @Model.SecurityToken
+
+    </div>
+</div>
+
+
