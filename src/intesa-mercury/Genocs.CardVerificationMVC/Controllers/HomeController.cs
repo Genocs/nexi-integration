@@ -22,6 +22,11 @@ namespace Genocs.CardVerificationMVC.Controllers
 
         private readonly string _rootURL = "https://test.monetaonline.it/monetaweb/payment/2/xml";
 
+        private readonly string Amount = "1.00";
+        private readonly string MerchantOrderId = "TRCK0001";
+        private readonly string CurrencyCode = "978";
+       
+
 
         public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
         {
@@ -62,7 +67,7 @@ namespace Genocs.CardVerificationMVC.Controllers
         public async Task<IActionResult> VerifyHost3DS()
         {
             HttpClient client = new HttpClient();
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{_rootURL}?id={_terminalId}&password={_terminalPassword}&operationType=initialize&amount=1.00&currencyCode=978&language=ITA&responseToMerchantUrl={_rootApplication}Home/CardVerificationPass&recoveryUrl={_rootApplication}Home/CardVerificationFail&merchantOrderId=TRCK0001&description=Descrizione&cardHolderName=GiovanniNocco&cardHolderEmail=giovanni.nocco@gmail.com");
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{_rootURL}?id={_terminalId}&password={_terminalPassword}&operationType=initialize&amount={Amount}&currencyCode={CurrencyCode}&language=ITA&responseToMerchantUrl={_rootApplication}Home/CardVerificationPass&recoveryUrl={_rootApplication}Home/CardVerificationFail&merchantOrderId=TRCK0001&description=Descrizione&cardHolderName=GiovanniNocco&cardHolderEmail=giovanni.nocco@gmail.com");
             HttpResponseMessage response = await client.SendAsync(requestMessage);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -83,14 +88,14 @@ namespace Genocs.CardVerificationMVC.Controllers
                 }
             }
 
-            return Ok("");
+            return Ok($"Response from Virtual pos is NOT OK. Result: '{response.StatusCode}'");
         }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> Moto()
         {
-            string url = $"{_rootURL}?id={_terminalId}&password={_terminalPassword}&operationType=pay&amount=1.00&currencyCode=978&MerchantOrderId=TrackingNo12345&description=Descrizione&cardHolderName=NomeCognome&card=4349942499990906&cvv2=034&expiryMonth=04&expiryYear=2023";
+            string url = $"{_rootURL}?id={_terminalId}&password={_terminalPassword}&operationType=pay&amount={Amount}&currencyCode={CurrencyCode}&MerchantOrderId={MerchantOrderId}&description=Descrizione&cardHolderName=NomeCognome&card=4349942499990906&cvv2=034&expiryMonth=04&expiryYear=2023";
             HttpClient client = new HttpClient();
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, url);
             HttpResponseMessage response = await client.SendAsync(requestMessage);
