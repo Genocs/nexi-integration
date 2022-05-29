@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+		<SignAssembly>false</SignAssembly>
+		<UserSecretsId>b1282b57-3a97-4fd9-8b83-9361c5b098cb</UserSecretsId>
+	</PropertyGroup>
+
+</Project>

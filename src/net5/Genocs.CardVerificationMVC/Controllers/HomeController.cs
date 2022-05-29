@@ -74,6 +74,8 @@ namespace Genocs.CardVerificationMVC.Controllers
             {
                 XmlSerializer deserializer = new XmlSerializer(typeof(Host3DSResponseXmlResponse));
 
+                string s = await response.Content.ReadAsStringAsync();
+
                 using (XmlTextReader reader = new XmlTextReader(new StringReader(await response.Content.ReadAsStringAsync())))
                 {
                     Host3DSResponseXmlResponse deserializedObject = deserializer.Deserialize(reader) as Host3DSResponseXmlResponse;
