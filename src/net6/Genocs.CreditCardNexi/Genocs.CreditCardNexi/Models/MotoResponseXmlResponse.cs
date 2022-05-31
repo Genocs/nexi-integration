@@ -10,16 +10,16 @@ public class MotoResponseXmlResponse
     public string? Result { get; set; }
 
     [XmlElement(ElementName = "authorizationcode")]
-    public string? Authorizationcode { get; set; }
+    public string? AuthorizationCode { get; set; }
 
     [XmlElement(ElementName = "paymentid")]
     public string? PaymentId { get; set; }
 
     [XmlElement(ElementName = "merchantorderid")]
-    public string? MerchantorderId { get; set; }
+    public string? MerchantOrderId { get; set; }
 
     [XmlElement(ElementName = "rrn")]
-    public double Rrn { get; set; }
+    public string Rrn { get; set; }
 
     [XmlElement(ElementName = "responsecode")]
     public int ResponseCode { get; set; }

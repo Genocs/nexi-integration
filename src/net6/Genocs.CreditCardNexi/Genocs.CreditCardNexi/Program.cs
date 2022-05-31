@@ -2,16 +2,17 @@ using Genocs.CreditCardNexi.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddRazorPages();
-
-
 // Register Configuration
 builder.Services.Configure<TerminalOptions>(
     builder.Configuration.GetSection(TerminalOptions.Position));
 
-// Register API Controllers.
 
+//builder.Services.AddRazorPages();
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
+// Register API Controllers.
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -31,7 +32,11 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapRazorPages();
+//app.MapRazorPages();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // Map the controllers to enable API
 app.MapControllers();

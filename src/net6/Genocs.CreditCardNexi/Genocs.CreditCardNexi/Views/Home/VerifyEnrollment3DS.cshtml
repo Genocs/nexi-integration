@@ -1,0 +1,19 @@
+﻿@using Genocs.CreditCardNexi.Models
+@model VerifyEnrollment3DSViewModel
+
+<!-- This page is used to redirect in order to perform the 3DS verification -->
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#creditCardAuthorization').submit();
+    });
+</script>
+
+<form name="redirect" id="creditCardAuthorization" method="post" action="@Model.Card3DSecureProviderURL">
+    <input type="hidden" name="MD" value="@Model.MD" />
+    <input type="hidden" name="PaReq" value="@Model.PaReq" />
+    <input type="hidden" name="TermUrl" value="@Model.TermUrl" />
+</form>
+
+
+

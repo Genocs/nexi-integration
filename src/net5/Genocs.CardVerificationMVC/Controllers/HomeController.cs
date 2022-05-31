@@ -48,10 +48,19 @@ namespace Genocs.CardVerificationMVC.Controllers
         }
 
         [HttpPost]
-        public IActionResult CardVerificationPass(string authorizationcode, string cardcountry, string cardexpirydate,
-            string cardtype, string customfield, string maskedpan,
-            string merchantorderid, string paymentid, string responsecode,
-            string result, string rrn, string securitytoken, string threedsecure)
+        public IActionResult CardVerificationPass(string authorizationcode,
+                                                  string cardcountry,
+                                                  string cardexpirydate,
+                                                  string cardtype,
+                                                  string customfield,
+                                                  string maskedpan,
+                                                  string merchantorderid,
+                                                  string paymentid,
+                                                  string responsecode,
+                                                  string result,
+                                                  string rrn,
+                                                  string securitytoken,
+                                                  string threedsecure)
         {
 
 
