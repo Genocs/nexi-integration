@@ -17,7 +17,7 @@ public class HomeController : Controller
 
     private readonly string _rootURL = "https://test.monetaonline.it/monetaweb/payment/2/xml";
 
-    private readonly string Amount = "1.00";
+    private readonly string Amount = "11.50";
     private readonly string MerchantOrderId = "TRCK0001";
     private readonly string CurrencyCode = "978";
 
@@ -40,11 +40,6 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult CardVerificationFail()
-    {
-        return View();
-    }
-
     //public IActionResult CardVerificationPass(Host3DSConfirmationResponse response)
     //{
     //    return View();
@@ -55,6 +50,11 @@ public class HomeController : Controller
     public ActionResult CardVerificationPass(Verify3DSResponse response)
     {
         return View(new CardVerificationPassViewModel { MD = response.MD, PaRes = response.PaRes });
+    }
+
+    public IActionResult CardVerificationFail()
+    {
+        return View();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -72,7 +72,7 @@ public class HomeController : Controller
         parameters.Add(new KeyValuePair<string, string>("expiryyear", "2023"));
         parameters.Add(new KeyValuePair<string, string>("expirymonth", "12"));
         parameters.Add(new KeyValuePair<string, string>("cardholdername", "Nocco Giovanni"));
-        parameters.Add(new KeyValuePair<string, string>("amount", "100.0"));
+        parameters.Add(new KeyValuePair<string, string>("amount", "0.5"));
 
         parameters.Add(new KeyValuePair<string, string>("currencycode", CurrencyCode));
         parameters.Add(new KeyValuePair<string, string>("description", "description"));
@@ -89,11 +89,11 @@ public class HomeController : Controller
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    XmlSerializer deserializer = new XmlSerializer(typeof(EnrollmentResponseXmlResponse));
+                    XmlSerializer serializer = new XmlSerializer(typeof(EnrollmentResponseXmlResponse));
 
                     using (XmlTextReader reader = new XmlTextReader(new StringReader(await response.Content.ReadAsStringAsync())))
                     {
-                        deserializedObject = deserializer.Deserialize(reader) as EnrollmentResponseXmlResponse;
+                        deserializedObject = serializer.Deserialize(reader) as EnrollmentResponseXmlResponse;
                         reader.Close();
                     }
                 }
@@ -116,41 +116,80 @@ public class HomeController : Controller
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<IActionResult> VerifyHost3DS()
     {
-        HttpClient client = new HttpClient();
-        HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{_rootURL}?id={_terminalId}&password={_terminalPassword}&operationType=initialize&amount={Amount}&currencyCode={CurrencyCode}&language=ITA&responseToMerchantUrl={_rootApplication}Home/CardVerificationPass&recoveryUrl={_rootApplication}Home/CardVerificationFail&merchantOrderId=TRCK0001&description=Descrizione&cardHolderName=GiovanniNocco&cardHolderEmail=giovanni.nocco@gmail.com");
-        HttpResponseMessage response = await client.SendAsync(requestMessage);
+        List<KeyValuePair<string, string>> parameters = new List<KeyValuePair<string, string>>();
 
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+
+        parameters.Add(new KeyValuePair<string, string>("id", _terminalId));
+        parameters.Add(new KeyValuePair<string, string>("password", _terminalPassword));
+        parameters.Add(new KeyValuePair<string, string>("operationType", "initialize"));
+
+        parameters.Add(new KeyValuePair<string, string>("amount", Amount));
+        parameters.Add(new KeyValuePair<string, string>("currencyCode", CurrencyCode));
+
+        parameters.Add(new KeyValuePair<string, string>("language", "ITA"));
+        parameters.Add(new KeyValuePair<string, string>("responseToMerchantUrl", $"{_rootApplication}Home/CardVerificationPass"));
+        parameters.Add(new KeyValuePair<string, string>("recoveryUrl", $"{_rootApplication}Home/CardVerificationFail"));
+
+        parameters.Add(new KeyValuePair<string, string>("merchantOrderId", "TRCK0001"));
+        parameters.Add(new KeyValuePair<string, string>("description", "Descrizione"));
+
+        parameters.Add(new KeyValuePair<string, string>("cardHolderName", "Nocco Giovanni"));
+        parameters.Add(new KeyValuePair<string, string>("cardHolderEmail", "giovanni.nocco@gmail.com"));
+
+        Host3DSResponseXmlResponse? deserializedObject = null;
+
+        using (HttpClient client = new())
         {
-            XmlSerializer deserializer = new XmlSerializer(typeof(Host3DSResponseXmlResponse));
-
-            string s = await response.Content.ReadAsStringAsync();
-
-            using (XmlTextReader reader = new XmlTextReader(new StringReader(s)))
+            using (HttpContent httpContent = new FormUrlEncodedContent(parameters))
             {
-                Host3DSResponseXmlResponse? deserializedObject = deserializer.Deserialize(reader) as Host3DSResponseXmlResponse;
-                reader.Close();
-                if (deserializedObject != null)
+                HttpResponseMessage response = await client.PostAsync(_rootURL, httpContent);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    Response.Redirect($"{deserializedObject.HostedPageUrl}?paymentid={deserializedObject.PaymentId}", false);
-                    return View(new DetailsViewModel
+                    XmlSerializer serializer = new XmlSerializer(typeof(Host3DSResponseXmlResponse));
+
+                    var tmp = await response.Content.ReadAsStringAsync();
+
+                    using (XmlTextReader reader = new XmlTextReader(new StringReader(await response.Content.ReadAsStringAsync())))
                     {
-                        PaymentId = deserializedObject.PaymentId,
-                        HostedPageUrl = deserializedObject.HostedPageUrl,
-                        SecurityToken = deserializedObject.SecurityToken
-                    });
+                        deserializedObject = serializer.Deserialize(reader) as Host3DSResponseXmlResponse;
+                        reader.Close();
+                        if (deserializedObject != null)
+                        {
+                            Response.Redirect($"{deserializedObject.HostedPageUrl}?paymentid={deserializedObject.PaymentId}", false);
+                            return View(new DetailsViewModel
+                            {
+                                PaymentId = deserializedObject.PaymentId,
+                                HostedPageUrl = deserializedObject.HostedPageUrl,
+                                SecurityToken = deserializedObject.SecurityToken
+                            });
+                        }
+                    }
                 }
             }
         }
 
-        return Ok($"Response from Virtual pos is NOT OK. Result: '{response.StatusCode}'");
+        return Ok($"gg");
     }
 
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<IActionResult> Moto()
     {
-        string url = $"{_rootURL}?id={_terminalId}&password={_terminalPassword}&operationType=pay&amount={Amount}&currencyCode={CurrencyCode}&MerchantOrderId={MerchantOrderId}&description=Descrizione&cardHolderName=NomeCognome&card=4349942499990906&cvv2=034&expiryMonth=04&expiryYear=2023";
+        string url = $"{_rootURL}?" +
+            $"id={_terminalId}" +
+            $"&password={_terminalPassword}" +
+            $"&operationType=pay" +
+            $"&amount={Amount}" +
+            $"&currencyCode={CurrencyCode}" +
+            $"&MerchantOrderId={MerchantOrderId}" +
+            $"&description=Descrizione" +
+            $"&cardHolderName=NomeCognome" +
+            $"&card=4349942499990906" +
+            $"&cvv2=034" +
+            $"&expiryMonth=04" +
+            $"&expiryYear=2023";
+
         HttpClient client = new HttpClient();
         HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, url);
         HttpResponseMessage response = await client.SendAsync(requestMessage);

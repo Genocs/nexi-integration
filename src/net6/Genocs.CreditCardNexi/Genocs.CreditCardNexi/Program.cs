@@ -1,6 +1,28 @@
 using Genocs.CreditCardNexi.Settings;
+using Microsoft.ApplicationInsights.DependencyCollector;
+using Serilog;
+using Serilog.Events;
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((ctx, lc) => lc
+    .WriteTo.Console());
+
+// Azure Application Insight configuration 
+builder.Services.AddApplicationInsightsTelemetry();
+
+builder.Services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, o) =>
+{
+    module.IncludeDiagnosticSourceActivities.Add("Nexi");
+});
+// Azure Application Insight configuration - END
 
 // Register Configuration
 builder.Services.Configure<TerminalOptions>(
@@ -42,3 +64,5 @@ app.MapControllerRoute(
 app.MapControllers();
 
 app.Run();
+
+Log.CloseAndFlush();
