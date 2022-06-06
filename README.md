@@ -10,5 +10,5 @@ This repo shows how to integrate credit card payment with Nexi.
 
 To build the project type following command
 ```ps
-dotnet build .\src\net6
+dotnet build .\src\net6\Genocs.CreditCardNexi
 ```
